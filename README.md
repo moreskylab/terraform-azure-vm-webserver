@@ -16,6 +16,8 @@ This Terraform configuration creates a web server infrastructure in Azure, equiv
 - **Storage Account**: Log storage (equivalent to AWS S3)
 - **Managed Identity**: VM permissions (equivalent to AWS IAM Role)
 
+![azure_arch](images/azure_webserver_architecture.png)
+
 ## Prerequisites
 
 1. Azure CLI installed and logged in: `az login`
