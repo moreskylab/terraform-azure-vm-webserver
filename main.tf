@@ -139,12 +139,9 @@ resource "azurerm_user_assigned_identity" "vm_identity" {
   }
 }
 
-# Assign Storage Blob Data Contributor role to the identity
-resource "azurerm_role_assignment" "vm_storage_access" {
-  scope                = azurerm_storage_account.logs.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_user_assigned_identity.vm_identity.principal_id
-}
+# Note: Role assignment removed due to insufficient permissions
+# Manual step required: Assign "Storage Blob Data Contributor" role to the managed identity
+# via Azure Portal or by a user with sufficient privileges
 
 # Create network interface
 resource "azurerm_network_interface" "web" {
@@ -186,7 +183,7 @@ resource "azurerm_linux_virtual_machine" "web" {
 
   admin_ssh_key {
     username   = var.admin_username
-    public_key = file(var.public_key_path)
+    public_key = file(pathexpand(var.public_key_path))
   }
 
   os_disk {
@@ -202,10 +199,7 @@ resource "azurerm_linux_virtual_machine" "web" {
   }
 
   identity {
-    type = "UserAssigned"
-    identity_ids = [
-      azurerm_user_assigned_identity.vm_identity.id
-    ]
+    type = "SystemAssigned"
   }
 
   custom_data = base64encode(templatefile("${path.module}/user_data.sh", {
